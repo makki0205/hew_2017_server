@@ -24,24 +24,24 @@ class Gun(tornado.web.RequestHandler):
         else:
             self.write("404")
 #クライアントからメッセージを受けるとopen → on_message → on_closeが起動する
-class WebSocketHandler(tornado.websocket.WebSocketHandler):
+class AppSocketHandler(tornado.websocket.WebSocketHandler):
 
-    #websocketオープン
-    def open(self):
-        print ("open")
-        if self not in cl:
-            cl.append(self)
-
-    #処理
     def on_message(self, message):
         data = json.loads(message)
         if data['key'] == current_key:
             data.pop('key')
             print(data)
-            pass
-        for client in cl:
-            client.write_message(message + " webSocket")
-            pass
+            for client in cl:
+                client.write_message(data)
+
+    def check_origin(self, origin):
+        return True
+        
+class RaspySocketHandler(tornado.websocket.WebSocketHandler):
+    def open(self):
+        print ("open")
+        if self not in cl:
+            cl.append(self)
 
     #websockeクローズ
     def on_close(self):
@@ -49,14 +49,12 @@ class WebSocketHandler(tornado.websocket.WebSocketHandler):
         if self in cl:
             cl.remove(self)
 
-    def check_origin(self, origin):
-        return True
-#
 # settings = {
 #     "static_path": os.path.join(os.path.dirname(__file__), "public"),
 # }
 app = tornado.web.Application([
-    (r"/websocket", WebSocketHandler),
+    (r"/websocket", AppSocketHandler),
+    (r"/raspy", RaspySocketHandler),
     (r"/app", Gun),
     (r"/", MainHandler)
 ],static_path=os.path.join(BASE_DIR, 'static'),
