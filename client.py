@@ -4,7 +4,7 @@ from websocket import create_connection
 import sys
 
 #コネクションを張る
-ws = create_connection("ws://localhost:8000/raspy")
+ws = create_connection("ws://makki0250.com:8000/raspy")
 
 #メッセージを送信
 # ws.send('hello world!')
