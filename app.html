@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<script>
+var g;
+var con;
+var y;
+window.addEventListener("devicemotion", function(event) {
+    //重力加速度センサのy軸取得
+    g = event.accelerationIncludingGravity.y;
+    y = event.acceleration.y;
+}, false);
+window.addEventListener('deviceorientation', function(event){ //デバイスの傾きや方角の値が変化したときに発火
+    con = event.alpha; // event.alphaで方角の値を取得
+});
+var arg = new Object;
+var pair=location.search.substring(1).split('&');
+for(var i=0;pair[i];i++) {
+    var kv = pair[i].split('=');
+    arg[kv[0]]=kv[1];
+}
+$(function() {
+    var data = {};
+    ws = new WebSocket("ws://" + window.location.hostname +":"+ window.location.port + "/websocket");
+
+    (function run (){
+        flg = false
+        var timerId = setInterval(function(){
+            if(y >= 8){
+                // ws.send("ban!!");
+                flg = true
+                clearTimeout(timerId);
+                setTimeout(run,400)
+            }
+            ws.send(JSON.stringify({key:arg.key,
+                                    y: con,
+                                    x: g,
+                                    trigger: flg
+                                    }));
+            console.log(g);
+        },30);
+    })()
+
+    ws.onopen = function() {
+        // ws.send('hi');
+    };
+    ws.onmessage = function(e) {
+      $("#holder").append($('<p>'+e.data+'</p>'));
+    };
+
+    $('#sender').append($('<button/>').text('send').click(function(){
+        ws.send($('#message').val());
+    }));
+});
+</script>
+</head>
+<body>
+<div id="sender">
+<input type="text" id="message" value="text" />
+</div>
+<h3>Messages</h3>
+<div id="holder"></div>
+</body>
+</html>
