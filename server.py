@@ -5,6 +5,9 @@ import tornado.ioloop
 import tornado.web
 import tornado.websocket
 import json
+from util.Socket import Socket
+
+socket = Socket()
 source_str = 'abcdefghijklmnopqrstuvwxyz0123456789'
 current_key = ""
 cl=[]
@@ -27,16 +30,18 @@ class Gun(tornado.web.RequestHandler):
 class AppSocketHandler(tornado.websocket.WebSocketHandler):
 
     def on_message(self, message):
-        data = json.loads(message)
-        if data['key'] == current_key:
-            data.pop('key')
-            print(data)
-            for client in cl:
-                client.write_message(data)
+        try:
+            data = json.loads(message)
+            if data['key'] == current_key:
+                data.pop('key')
+                print(data)
+                socket.sendAll(json.dumps(data))
+        except Exception as e:
+            pass
 
     def check_origin(self, origin):
         return True
-        
+
 class RaspySocketHandler(tornado.websocket.WebSocketHandler):
     def open(self):
         print ("open")

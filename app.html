@@ -6,6 +6,8 @@
 var g;
 var con;
 var y;
+var default_con;
+var inversion_con;
 window.addEventListener("devicemotion", function(event) {
     //重力加速度センサのy軸取得
     g = event.accelerationIncludingGravity.y;
@@ -24,8 +26,16 @@ $(function() {
     var data = {};
     ws = new WebSocket("ws://" + window.location.hostname +":"+ window.location.port + "/websocket");
 
-    (function run (){
-        flg = false
+    setTimeout(function(){
+
+        default_con = con;
+        inversion_con = (default_con+180) % 360;
+
+        run();
+    },1000);
+
+    function run (){
+        flg = false;
         var timerId = setInterval(function(){
             if(y >= 6){
                 // ws.send("ban!!");
@@ -33,14 +43,29 @@ $(function() {
                 clearTimeout(timerId);
                 setTimeout(run,400)
             }
+            var now_con = 0
+            if(default_con < 180){
+                if(inversion_con <= con){
+                    now_con = default_con + (360 - con);
+                }else{
+                    now_con = default_con - con;
+                }
+            }else{
+                if(inversion_con >= con){
+                    now_con = -1 * ((360 - default_con) + con)
+                }else{
+                    now_con = default_con - con;
+                }
+            }
+            $("p").text(con + " | " + default_con  + " | " + inversion_con + " | " + now_con);
             ws.send(JSON.stringify({key:arg.key,
-                                    y: con,
-                                    x: g,
+                                    y: g,
+                                    x: now_con,
                                     trigger: flg
                                     }));
             console.log(g);
         },80);
-    })()
+    }
 
     ws.onopen = function() {
         // ws.send('hi');
@@ -61,5 +86,6 @@ $(function() {
 </div>
 <h3>Messages</h3>
 <div id="holder"></div>
+<p></p>
 </body>
 </html>

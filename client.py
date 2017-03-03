@@ -1,6 +1,6 @@
 #-*- coding:utf-8 -*-
 
-from websocket import create_connection
+from websocket. import create_connection
 import sys
 
 #コネクションを張る
