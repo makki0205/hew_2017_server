@@ -6,6 +6,7 @@ import tornado.web
 import tornado.websocket
 import json
 from util.Socket import Socket
+from util.SocketManager import socketManager
 
 socket = Socket()
 source_str = 'abcdefghijklmnopqrstuvwxyz0123456789'
@@ -28,6 +29,15 @@ class Gun(tornado.web.RequestHandler):
             self.write("404")
 #クライアントからメッセージを受けるとopen → on_message → on_closeが起動する
 class AppSocketHandler(tornado.websocket.WebSocketHandler):
+    def open(self):
+        if self not in cl:
+            cl.append(self)
+
+    #websockeクローズ
+    def on_close(self):
+        print ("close")
+        if self in cl:
+            cl.remove(self)
 
     def on_message(self, message):
         try:
@@ -42,24 +52,26 @@ class AppSocketHandler(tornado.websocket.WebSocketHandler):
     def check_origin(self, origin):
         return True
 
-class RaspySocketHandler(tornado.websocket.WebSocketHandler):
+class indexSocketHandler(tornado.websocket.WebSocketHandler):
     def open(self):
-        print ("open")
-        if self not in cl:
-            cl.append(self)
+        if self not in socketManager.get_index():
+            socketManager.set_index(self)
 
     #websockeクローズ
     def on_close(self):
         print ("close")
-        if self in cl:
-            cl.remove(self)
+        if self in socketManager.get_index():
+            socketManager.delete_index(self)
+
+    def check_origin(self, origin):
+        return True
 
 # settings = {
 #     "static_path": os.path.join(os.path.dirname(__file__), "public"),
 # }
 app = tornado.web.Application([
     (r"/websocket", AppSocketHandler),
-    (r"/raspy", RaspySocketHandler),
+    (r"/index", indexSocketHandler),
     (r"/app", Gun),
     (r"/", MainHandler)
 ],static_path=os.path.join(BASE_DIR, 'static'),

@@ -1,17 +1,19 @@
-#-*- coding:utf-8 -*-
+# -*- coding:utf-8 -*-
+import socket
+import json
+try:
+    import thread
+except ImportError:
+    import _thread as thread #Py3K changed it.
 
-from websocket. import create_connection
-import sys
+host = "localhost" #お使いのサーバーのホスト名を入れます
+port = 6666 #適当なPORTを指定してあげます
 
-#コネクションを張る
-ws = create_connection("ws://makki0250.com:8000/raspy")
+client = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #オブジェクトの作成をします
 
-#メッセージを送信
-# ws.send('hello world!')
+client.connect((host, port)) #これでサーバーに接続します
 
-#受信したメッセージを表示
-while True:
-    print (ws.recv())
-
-#コネクションを切断
-ws.close()
+msg = {
+    "hit":True
+}
+client.send(json.dumps(msg).encode("utf-8")) #適当なデータを送信します（届く側にわかるように）

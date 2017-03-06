@@ -3,38 +3,25 @@
     <head>
         <meta charset="utf-8">
         <title></title>
-        <style media="screen">
-            body,html{
-                width: 100%;
-                height: 100%;
-            }
-            *{
-                padding: 0;
-                margin: 0;
-                box-sizing: border-box;
-            }
-            .qr{
-                width:30%;
-                margin: 0 auto;
-                margin-top: 10%;
-            }
-            .qr img{
-                display: block;
-                width: 100%;
-            }
-        </style>
+        <link rel="stylesheet" type="text/css" href="/static/css/index.css">
+
     </head>
     <body>
+        <image class="face" src="/static/kao.jpg">
+        <image class="bullet" src="/static/bullet.png">
         <div class="qr">
         </div>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-        <script src="/static/jquery-qrcode.min.js"></script>
+        <script src="/static/javascript/jquery-qrcode.min.js"></script>
+        <script src="/static/javascript/audioPlayer.js"></script>
+        <script src="/static/javascript/index.js"></script>
         <script type="text/javascript">
         console.log("http://" + window.location.hostname + ":" + window.location.port + '/app?key={{ hash }}');
         $('.qr').qrcode({
             text: "http://" + window.location.hostname + ":" + window.location.port + '/app?key={{ hash }}',
             render: 'image'
         });
+
         </script>
     </body>
 </html>

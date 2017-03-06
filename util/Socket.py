@@ -6,9 +6,11 @@ try:
     import thread
 except ImportError:
     import _thread as thread #Py3K changed it.
+from util.SocketManager import socketManager
 
-HOST = '192.168.100.135'
-PORT = 9999
+
+HOST = 'localhost'
+PORT = 6666
 BACKLOG = 10
 BUFSIZE = 1024
 
@@ -41,8 +43,8 @@ class Socket():
             data = self.connect[addr[0]+str(addr[1])].recv(BUFSIZE)
             if not data:
                 break
-            print(data)
-            self.sendAll(data)
+            msg = data.decode("utf-8")
+            socketManager.send_index(msg)
 
         self.connect[addr[0]+str(addr[1])].close()
         del self.connect[addr[0]+str(addr[1])]
