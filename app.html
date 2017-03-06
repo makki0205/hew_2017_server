@@ -3,6 +3,7 @@
 <head>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 <script>
+
 var g;
 var con;
 var y;
@@ -31,7 +32,6 @@ $(function() {
         default_con = con;
         inversion_con = (default_con+180) % 360;
 
-        run();
     },1000);
 
     function run (){
@@ -57,35 +57,36 @@ $(function() {
                     now_con = default_con - con;
                 }
             }
-            $("p").text(con + " | " + default_con  + " | " + inversion_con + " | " + now_con);
-            ws.send(JSON.stringify({key:arg.key,
+            ws.send(JSON.stringify({state:1,
+                                    key:arg.key,
                                     y: g,
                                     x: now_con,
                                     trigger: flg
                                     }));
-            console.log(g);
         },80);
     }
 
     ws.onopen = function() {
-        // ws.send('hi');
+
+        ws.send(JSON.stringify({state:0, key:arg.key}))
     };
     ws.onmessage = function(e) {
-      $("#holder").append($('<p>'+e.data+'</p>'));
+      if (e.data != arg.key) {
+          location.reload();
+      }
     };
+    $('.shutter').click(function(){
+        console.log("onクリック");
+        ws.send(JSON.stringify({state:2, key:arg.key}))
+        // run();
 
-    $('#sender').append($('<button/>').text('send').click(function(){
-        ws.send($('#message').val());
-    }));
+    });
 });
 </script>
 </head>
 <body>
-<div id="sender">
-<input type="text" id="message" value="text" />
-</div>
-<h3>Messages</h3>
-<div id="holder"></div>
-<p></p>
+
+<button type="button" name="button" class="shutter">シャッター</button>
+
 </body>
 </html>

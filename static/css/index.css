@@ -12,6 +12,11 @@ body,html{
     margin: 0 auto;
     margin-top: 10%;
 }
+p{
+    margin-left: 5%;
+    font-size: 5rem;
+    color: #fff;
+}
 .qr img{
     display: block;
     width: 100%;
@@ -30,4 +35,20 @@ body,html{
     position: absolute;
     display: none;
 
+}
+.shutter{
+    padding: 10%;
+}
+.remaining{
+    width: 25%;
+    display: flex;
+}
+.remaining .image {
+    width: 20%;
+    list-style: none;
+}
+.remaining img{
+    display: block;
+    width: 100%;
+    height: auto;
 }

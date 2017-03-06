@@ -9,7 +9,7 @@ except ImportError:
 from util.SocketManager import socketManager
 
 
-HOST = 'localhost'
+HOST = '192.168.100.199'
 PORT = 6666
 BACKLOG = 10
 BUFSIZE = 1024
